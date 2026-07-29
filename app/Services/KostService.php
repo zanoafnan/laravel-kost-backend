@@ -25,18 +25,20 @@ class KostService
             ->paginate(10);
     }
 
-    public function update(
-        Kost $kost,
-        array $data
-    ): Kost {
-        $kost->update([
-            'name' => $data['name'],
-            'description' => $data['description'],
-            'location' => $data['location'],
-            'price' => $data['price'],
-        ]);
+    public function update(Kost $kost, array $data): Kost
+    {
+        $kost->update(
+            collect($data)
+                ->only([
+                    'name',
+                    'description',
+                    'location',
+                    'price'
+                ])
+                ->toArray()
+        );
 
-        return $kost->fresh();
+        return $kost->refresh();
     }
 
     public function delete(Kost $kost): bool
@@ -52,7 +54,7 @@ class KostService
                 function ($query, $name) {
                     $query->where(
                         'name',
-                        'like',
+                        'ilike',
                         "%{$name}%"
                     );
                 }
@@ -62,18 +64,28 @@ class KostService
                 function ($query, $location) {
                     $query->where(
                         'location',
-                        'like',
+                        'ilike',
                         "%{$location}%"
                     );
                 }
             )
             ->when(
-                $filters['price'] ?? null,
-                function ($query, $price) {
+                $filters['min_price'] ?? null,
+                function ($query, $minPrice) {
+                    $query->where(
+                        'price',
+                        '>=',
+                        $minPrice
+                    );
+                }
+            )
+            ->when(
+                $filters['max_price'] ?? null,
+                function ($query, $maxPrice) {
                     $query->where(
                         'price',
                         '<=',
-                        $price
+                        $maxPrice
                     );
                 }
             )
