@@ -37,6 +37,8 @@ class CreditService
     public function deduct(User $user, int $amount): void
     {
         $user->decrement('credit', $amount);
+
+        $user->refresh();
     }
 
     public function set(User $user, int $amount): void

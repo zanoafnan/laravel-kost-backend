@@ -18,7 +18,6 @@ class AvailabilityService
     ) {}
 
     public function ask(User $user, Kost $kost): AvailabilityRequest
-
     {
         if ($user->role === UserRole::OWNER) {
             throw new AccessDeniedHttpException(
@@ -26,23 +25,25 @@ class AvailabilityService
             );
         }
 
-        if ($user->credit < CreditAmount::ASK_AVAILABILITY->value) {
-            throw ValidationException::withMessages([
-                'credit' => ['Not enough credit.'],
-            ]);
-        }
+        $creditUsed = CreditAmount::ASK_AVAILABILITY->value;
 
-        return DB::transaction(function () use ($user, $kost) {
+        return DB::transaction(function () use ($user, $kost, $creditUsed) {
 
-            $this->creditService->deduct(
-                $user,
-                CreditAmount::ASK_AVAILABILITY->value
-            );
+            // Lock user agar tidak terjadi race condition
+            $user = User::lockForUpdate()->findOrFail($user->id);
+
+            if ($user->credit < $creditUsed) {
+                throw ValidationException::withMessages([
+                    'credit' => ['Not enough credit.'],
+                ]);
+            }
+
+            $this->creditService->deduct($user, $creditUsed);
 
             return AvailabilityRequest::create([
                 'user_id' => $user->id,
                 'kost_id' => $kost->id,
-                'credit_used' => CreditAmount::ASK_AVAILABILITY->value,
+                'credit_used' => $creditUsed,
             ]);
         });
     }
