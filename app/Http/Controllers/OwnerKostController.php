@@ -17,11 +17,13 @@ class OwnerKostController extends Controller
 
     public function __construct(
         private KostService $kostService
-    ) {
-    }
+    ) {}
 
     public function index(Request $request): JsonResponse
     {
+
+        $this->authorize('create', Kost::class);
+
         $kosts = $this->kostService->ownerKosts(
             $request->user()
         );

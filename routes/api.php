@@ -43,7 +43,10 @@ Route::prefix('kosts')->group(function () {
 
 
 // Owner Kost Routes
-Route::middleware('auth:sanctum')
+Route::middleware([
+    'auth:sanctum',
+    'owner',
+])
     ->prefix('owner')
     ->group(function () {
 
