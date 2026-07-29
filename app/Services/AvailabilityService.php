@@ -29,7 +29,6 @@ class AvailabilityService
 
         return DB::transaction(function () use ($user, $kost, $creditUsed) {
 
-            // Lock user agar tidak terjadi race condition
             $user = User::lockForUpdate()->findOrFail($user->id);
 
             if ($user->credit < $creditUsed) {

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KostController;
 use App\Http\Controllers\OwnerKostController;
+use App\Http\Controllers\AvailabilityController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -14,7 +15,6 @@ Route::prefix('auth')->group(function () {
 
     // Login
     Route::post('/login', [AuthController::class, 'login']);
-
 });
 
 
@@ -27,7 +27,6 @@ Route::middleware('auth:sanctum')
 
         // Current user
         Route::get('/me', [AuthController::class, 'me']);
-
     });
 
 //Public Kost Routes
@@ -38,7 +37,6 @@ Route::prefix('kosts')->group(function () {
 
     // Detail kost
     Route::get('/{kost}', [KostController::class, 'show']);
-
 });
 
 
@@ -63,7 +61,15 @@ Route::middleware([
 
             // Delete kost
             Route::delete('/{kost}', [OwnerKostController::class, 'destroy']);
-
         });
-
     });
+
+// Availability Routes
+Route::middleware('auth:sanctum')->group(function () {
+
+    Route::post(
+        '/availability',
+        [AvailabilityController::class, 'store']
+    );
+
+});
