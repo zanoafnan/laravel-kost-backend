@@ -33,7 +33,7 @@ class KostService
                     'name',
                     'description',
                     'location',
-                    'price'
+                    'price',
                 ])
                 ->toArray()
         );
@@ -52,20 +52,18 @@ class KostService
             ->when(
                 $filters['name'] ?? null,
                 function ($query, $name) {
-                    $query->where(
-                        'name',
-                        'ilike',
-                        "%{$name}%"
+                    $query->whereRaw(
+                        'LOWER(name) LIKE ?',
+                        ['%' . strtolower($name) . '%']
                     );
                 }
             )
             ->when(
                 $filters['location'] ?? null,
                 function ($query, $location) {
-                    $query->where(
-                        'location',
-                        'ilike',
-                        "%{$location}%"
+                    $query->whereRaw(
+                        'LOWER(location) LIKE ?',
+                        ['%' . strtolower($location) . '%']
                     );
                 }
             )
