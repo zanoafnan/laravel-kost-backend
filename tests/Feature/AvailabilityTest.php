@@ -3,7 +3,6 @@
 namespace Tests\Feature;
 
 use App\Enums\CreditAmount;
-use App\Models\AvailabilityRequest;
 use App\Models\Kost;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
