@@ -125,7 +125,7 @@ Authorization: Bearer <token>
 Run manually
 
 ```bash
-php artisan app:recharge-credit
+php artisan credit:recharge
 ```
 
 Or schedule it monthly using Laravel Scheduler.
